@@ -33,10 +33,6 @@ def processor():
 
     sendstring = '' #COMBINE BATTERY WITH FLIGHT MODE to reduce serial load
 
-    batterylevel= (battery-batterymin)/(batterymax-batterymin)
-    batterylevel= round(batterylevel/10)*10
-    sendstring+=batterylevel
-
     if armed==False:
         sendstring+='D'
     elif user_input >0:
@@ -53,6 +49,12 @@ def processor():
         sendstring+='O'
     elif flightmode=='STABILIZED':
         sendstring+='S'
+
+    batterylevel= (battery-batterymin)/(batterymax-batterymin)
+    batterylevel= round(batterylevel/10)*10
+    sendstring+=batterylevel
+
+    # sendstring+="/n"
 
     if user_input != previnput:
         ser.write(sendstring)
