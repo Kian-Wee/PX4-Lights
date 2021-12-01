@@ -35,16 +35,19 @@ def processor():
 
     if armed==False:
         sendstring+='D'
-    elif user_input >0:
+    elif user_input ==1: #NOTIFY HRI
         print("Alarm is on")
         sendstring+='H'
-    elif user_input ==0:
-        print("Alarm is off")
-        sendstring+='L'
-    elif user_input <0:
-        print("Program Exiting")
-        sendstring+='L'
-        ser.close()
+    elif user_input ==2:
+        print("Scout mode")
+        sendstring+='R'
+    # elif user_input ==0:
+    #     print("Alarm is off")
+    #     sendstring+='L'
+    # elif user_input <0:
+    #     print("Program Exiting")
+    #     sendstring+='L'
+    #     ser.close()
     elif flightmode=='OFFBOARD':
         sendstring+='O'
     elif flightmode=='STABILIZED':
@@ -60,8 +63,6 @@ def processor():
         ser.write(sendstring)
 
     previnput=sendstring
-
-
 
 def callback(msg):
     global HRI
@@ -82,6 +83,7 @@ if __name__ == '__main__':
     hrisub = rospy.Subscriber("/hri_user_input", Int32, callback)
     statesub = rospy.Subscriber("uav0/mavros/state", State, statecallback)
     batterysub = rospy.Subscriber("uav0/mavros/battery", BatteryState, batterycallback)
+    processor()
     rospy.spin()
 
 
