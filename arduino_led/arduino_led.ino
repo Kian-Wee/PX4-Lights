@@ -19,6 +19,17 @@ int tHIGH=0;
 int tLED=0;
 int tcur=0;
 
+struct timer
+{
+  public:
+    unsigned long high;
+    unsigned long low;
+};
+
+timer Alarm = {
+  0,0
+};
+
 void setup() {
   pinMode(L, OUTPUT);
   pinMode(R, OUTPUT);
@@ -79,15 +90,18 @@ void readSerial(){
 void flightmode(){
   if(FlightState=='H'){
       printto("Alarm On");
-      tcur=millis();
-      tHIGH=rand()%200+10+tcur;
-      //if(tcur
-      digitalWrite(0, LOW);
-      digitalWrite(1, HIGH);
-      delay(rand()%200+10);
-      digitalWrite(1, LOW);
-      digitalWrite(0, HIGH);
-      delay(rand()%200+10);
+      if (millis()>Alarm.low): //Sequence has finished
+        Alarm.high=rand()%200+10+millis(); // Regenerate new timing variables
+        Alarm.low=rand()%200+10+Alarm.high;
+      else if (millis()<Alarm.high):
+        digitalWrite(L, LOW);
+        digitalWrite(R, HIGH);
+        digitalWrite(S, HIGH);
+      else if (millis()<Alarm.low):
+        digitalWrite(L, LOW);
+        digitalWrite(R, HIGH);
+        digitalWrite(S, LOW);
+
 //  }else if(FlightState='L'){
 //      printto("Alarm Off");
 //      digitalWrite(L, LOW);
