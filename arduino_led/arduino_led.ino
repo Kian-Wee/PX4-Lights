@@ -1,18 +1,19 @@
 #include "FastLED.h"
-#define NUM_LEDS 60
+#define NUM_LEDS 25
 CRGB leds[NUM_LEDS];
 
 const int L=0; //Left LED
 const int R=1; //Right LED
 const int S=2; //Speaker
-const int LEDPIN=3; //WS2812B LED DIGITAL PIN
+#define LED_PIN 8 //WS2812B LED DIGITAL PIN 8
 String incomingByte;
 bool AlarmState=0;
 String message;
 bool debug=1;
-int batteryarr[] =[1,2,3,4,5,6,7,8,9,10];
+//int batteryarr[]={1,2,3,4,5,6,7,8,9,10};
 int batterylevelint = 0;
 String FlightState;
+int brightness=32;
 
 int tLOW=0; //timer variable
 int tHIGH=0;
@@ -34,9 +35,10 @@ void setup() {
   pinMode(L, OUTPUT);
   pinMode(R, OUTPUT);
   pinMode(S, OUTPUT);
-  pinMode(LEDPIN, OUTPUT);
-  FastLED.addLeds<WS2812B, LEDPIN>(leds, NUM_LEDS);
-  Serial.setTimeout(200); //Currently Serial.readString waits for 200ms, might rewrite in the future to allow terminator \n
+  pinMode(LED_PIN, OUTPUT);
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.setBrightness(brightness);
+  //Serial.setTimeout(200); //Currently Serial.readString waits for 200ms, might rewrite in the future to allow terminator \n
   Serial.begin(115200);
   Serial.println("Initalising Program");
 }
@@ -47,13 +49,16 @@ void lightall(CRGB color){
 }
 
 void batterydisplay(int batterylevel){
+  Serial.println("Displaying");
+  Serial.println(batterylevel);
   for(int i=0;i++;i<batterylevel){
-    if(i<5){
-      leds[batteryarr[i]]=CRGB:RED;
+    if(i<(5+14)){
+      leds[14+i]=CRGB::Red;
     }else{
-      leds[batteryarr[i]]=CRGB:GREEN;
+      leds[14+i]=CRGB::Green;
     }
   }
+  FastLED.show();
 }
 
 void printto(String text){
@@ -71,65 +76,103 @@ void readSerial(){
     printto(incomingByte); //DEBUG
     //previousByte = incomingByte;
 
-    FlightState=String(incomingByte[0])
+    FlightState=String(incomingByte[0]);
 
 //    if (String(incomingByte[0]) == "H") {
-//      AlarmState==1
+//      AlarmState==1;
 //    }else if (String(incomingByte[0]) == "L") {
-//      AlarmState=0
+//      AlarmState=0;
 //    }
 
-    batterylevel = String(incomingByte);
+    String batterylevel = String(incomingByte);
     batterylevel.remove(0,1); //Remove flight mode to leave string with batterylevel
-    batterylevelint = int(batterylevel)/10
+    batterylevelint = batterylevel.toInt()/10;
     batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
   }
 }
 
 //Function to Store State of the previous flightmode so that the LED animations can be contionusly driven with delays
 void flightmode(){
-  if(FlightState=='H'){
+  if(FlightState=="H"){
       printto("Alarm On");
-      if (millis()>Alarm.low): //Sequence has finished
+      if (millis()>Alarm.low){ //Sequence has finished
         Alarm.high=rand()%200+10+millis(); // Regenerate new timing variables
         Alarm.low=rand()%200+10+Alarm.high;
-      else if (millis()<Alarm.high):
+      }else if (millis()<Alarm.high){
         digitalWrite(L, LOW);
         digitalWrite(R, HIGH);
         digitalWrite(S, HIGH);
-      else if (millis()<Alarm.low):
+        for(int i=0; i++; i<15) leds[i]=CRGB::Red;
+        FastLED.show();
+      }else if (millis()<Alarm.low){
         digitalWrite(L, LOW);
         digitalWrite(R, HIGH);
         digitalWrite(S, LOW);
 
-//  }else if(FlightState='L'){
+//  }else if(FlightState="L"){
 //      printto("Alarm Off");
 //      digitalWrite(L, LOW);
 //      digitalWrite(R, LOW);
 //      digitalWrite(S, LOW);
-  }else if(FlightState='R'){
+  }else if(FlightState="R"){
       printto("Scout mode");
       digitalWrite(L, HIGH);
       digitalWrite(R, HIGH);
-  }else if(FlightState='O'){
+      for(int i=0; i++; i<15) leds[i]=CRGB::Pink;
+      FastLED.show();
+  }else if(FlightState="O"){
       printto("Offboard mode");
       digitalWrite(L, LOW);
       digitalWrite(R, LOW);
       digitalWrite(S, LOW);
-  }else if(FlightState='S'){
+      for(int i=0; i++; i<15) leds[i]=CRGB::Purple;
+      FastLED.show();
+  }else if(FlightState="S"){
       printto("Stabalize mode");
       digitalWrite(L, LOW);
       digitalWrite(R, LOW);
       digitalWrite(S, LOW);
+      for(int i=0; i++; i<15) leds[i]=CRGB::Blue;
+      FastLED.show();
   }
+}
+}
+
+void test(){
+
+  Serial.println("Testing every LED");
+  FastLED.clear();
+  for(int i=0;i<NUM_LEDS; i++){
+    leds[i]=CRGB::Red;
+    FastLED.show();
+    delay(50);
+  }
+  delay(2000);
+  //lightall(CRGB::Red);
+  
+  FastLED.clear();
+  Serial.println("Testing Battery");
+  // Run through the 10 LEDS assigned to battery
+  for(int i=0; i<11; i++){
+    leds[i]=CRGB::Green;
+    delay(50);
+    Serial.println("Displaying battery");
+    batterydisplay(i);
+    delay(50);
+  }
+  delay(2000);
+  
+  FastLED.clear();
 }
 
 void loop() {
-  //lightall(CRGB::Red);
   readSerial();
   flightmode();
+//  test();
 }
-//
+
+
+
 //  digitalWrite(0, LOW);
 //  digitalWrite(1, HIGH);
 //  delay(rand()%200+10);
