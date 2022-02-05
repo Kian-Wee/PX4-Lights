@@ -13,7 +13,7 @@ bool debug=1;
 //int batteryarr[]={1,2,3,4,5,6,7,8,9,10};
 int batterylevelint = 0;
 String FlightState;
-int brightness=32;
+int brightness=5;
 
 int tLOW=0; //timer variable
 int tHIGH=0;
@@ -49,16 +49,15 @@ void lightall(CRGB color){
 }
 
 void batterydisplay(int batterylevel){
-  Serial.println("Displaying");
-  Serial.println(batterylevel);
-  for(int i=0;i++;i<batterylevel){
-    if(i<(5+14)){
-      leds[14+i]=CRGB::Red;
+  for(int i=0; i < batterylevel; i++){
+    if(i<5){
+      leds[15+i]=CRGB::Red;
     }else{
-      leds[14+i]=CRGB::Green;
+      leds[15+i]=CRGB::Green;
     }
   }
   FastLED.show();
+  
 }
 
 void printto(String text){
@@ -93,6 +92,7 @@ void readSerial(){
 
 //Function to Store State of the previous flightmode so that the LED animations can be contionusly driven with delays
 void flightmode(){
+  extern String FlightState;
   if(FlightState=="H"){
       printto("Alarm On");
       if (millis()>Alarm.low){ //Sequence has finished
@@ -114,20 +114,20 @@ void flightmode(){
 //      digitalWrite(L, LOW);
 //      digitalWrite(R, LOW);
 //      digitalWrite(S, LOW);
-  }else if(FlightState="R"){
+  }else if(FlightState=="R"){
       printto("Scout mode");
       digitalWrite(L, HIGH);
       digitalWrite(R, HIGH);
       for(int i=0; i++; i<15) leds[i]=CRGB::Pink;
       FastLED.show();
-  }else if(FlightState="O"){
+  }else if(FlightState=="O"){
       printto("Offboard mode");
       digitalWrite(L, LOW);
       digitalWrite(R, LOW);
       digitalWrite(S, LOW);
       for(int i=0; i++; i<15) leds[i]=CRGB::Purple;
       FastLED.show();
-  }else if(FlightState="S"){
+  }else if(FlightState=="S"){
       printto("Stabalize mode");
       digitalWrite(L, LOW);
       digitalWrite(R, LOW);
@@ -148,27 +148,48 @@ void test(){
     delay(50);
   }
   delay(2000);
-  //lightall(CRGB::Red);
-  
   FastLED.clear();
+  
   Serial.println("Testing Battery");
   // Run through the 10 LEDS assigned to battery
   for(int i=0; i<11; i++){
-    leds[i]=CRGB::Green;
-    delay(50);
-    Serial.println("Displaying battery");
+    Serial.print("Displaying battery at ");
+    Serial.println(i*10);
     batterydisplay(i);
     delay(50);
   }
   delay(2000);
+  FastLED.clear();
+
+  extern String FlightState;
   
+  FlightState="H";
+  flightmode();
+  delay(2000);
+  FastLED.clear();
+  
+  FlightState="R";
+  Serial.print("test ");
+  Serial.println(FlightState);
+  flightmode();
+  delay(2000);
+  FastLED.clear();
+
+  FlightState="O";
+  flightmode();
+  delay(2000);
+  FastLED.clear();
+
+  FlightState="S";
+  flightmode();
+  delay(2000);
   FastLED.clear();
 }
 
 void loop() {
-  readSerial();
-  flightmode();
-//  test();
+//  readSerial();
+//  flightmode();
+  test();
 }
 
 
