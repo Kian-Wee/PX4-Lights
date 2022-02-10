@@ -9,7 +9,9 @@ from sensor_msgs.msg import BatteryState
 # Serial connection to teensy
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
-ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
+#ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
+ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A1:0F:04-if00', 115200)
+
 
 ## TODO, ADD CHANNEL 5 BYPASS
 
@@ -19,7 +21,7 @@ previnput=''
 HRI=0
 armed=None
 flightmode=None
-battery=None
+battery=0
 
 batterymin=3.2
 batterymax=4.2
@@ -28,41 +30,48 @@ batterymax=4.2
 # Currently latches on to the previous input, ie requires input 0 to turn it off
 def processor():
 
-    global previnput, batterymin, batterymax
-    user_input=HRI
+    global previnput, batterymin, batterymax, flightmode, battery
 
-    sendstring = '' #COMBINE BATTERY WITH FLIGHT MODE to reduce serial load
+    while not rospy.is_shutdown():
+        user_input=HRI
 
-    if armed==False:
-        sendstring+='D'
-    elif user_input ==1: #NOTIFY HRI
-        print("Alarm is on")
-        sendstring+='H'
-    elif user_input ==2:
-        print("Scout mode")
-        sendstring+='R'
-    # elif user_input ==0:
-    #     print("Alarm is off")
-    #     sendstring+='L'
-    # elif user_input <0:
-    #     print("Program Exiting")
-    #     sendstring+='L'
-    #     ser.close()
-    elif flightmode=='OFFBOARD':
-        sendstring+='O'
-    elif flightmode=='STABILIZED':
-        sendstring+='S'
+        sendstring = '' #COMBINE BATTERY WITH FLIGHT MODE to reduce serial load
 
-    batterylevel= (battery-batterymin)/(batterymax-batterymin)
-    batterylevel= round(batterylevel/10)*10
-    sendstring+=batterylevel
+        if armed==False:
+            sendstring+='D'
+        elif user_input ==1: #NOTIFY HRI
+            print("Alarm is on")
+            sendstring+='H'
+        elif user_input ==2:
+            print("Scout mode")
+            sendstring+='R'
+        # elif user_input ==0:
+        #     print("Alarm is off")
+        #     sendstring+='L'
+        # elif user_input <0:
+        #     print("Program Exiting")
+        #     sendstring+='L'
+        #     ser.close()
+        elif flightmode=='OFFBOARD':
+            print("Offboard mode")
+            sendstring+='O'
+        elif flightmode=='STABILIZED':
+            print("Stabalized mode")
+            sendstring+='S'
 
-    # sendstring+="/n"
 
-    if user_input != previnput:
-        ser.write(sendstring)
+        batterylevel= (battery-batterymin)/(batterymax-batterymin)
+        batterylevel= round(batterylevel*10)
+        sendstring+=str(int(batterylevel))
 
-    previnput=sendstring
+        if sendstring != previnput:
+            print("Sending to ESP32",sendstring)
+            ser.write(sendstring)
+
+        # #for testing
+        # ser.write(sendstring)
+
+        previnput=sendstring
 
 def callback(msg):
     global HRI
@@ -75,7 +84,7 @@ def statecallback(msg):
 
 def batterycallback(msg):
     global battery
-    batterytemp=msg.cellvoltage
+    batterytemp=msg.cell_voltage
     battery=sum(batterytemp)/len(batterytemp)
 
 if __name__ == '__main__':

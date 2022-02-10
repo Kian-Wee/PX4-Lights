@@ -197,10 +197,10 @@ void test(){
 }
 
 void loop() {
-//  readSerial();
-//  flightmode();
-//  FastLED.show();
-  test();
+  readSerial();
+  flightmode();
+  FastLED.show();
+//  test();
 }
 
 
