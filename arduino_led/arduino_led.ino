@@ -6,19 +6,22 @@ const int L=0; //Left LED
 const int R=1; //Right LED
 const int S=2; //Speaker
 #define LED_PIN 8 //WS2812B LED DIGITAL PIN 8
-String incomingByte;
-bool AlarmState=0;
-String message;
+#define ONBOARD_LED 10 //13 for arduino mega
+
 bool debug=1;
-//int batteryarr[]={1,2,3,4,5,6,7,8,9,10};
+
+bool AlarmState=0;
 int batterylevelint = 0;
 String FlightState;
+String prevFlightState;
 int brightness=5;
 
 int tLOW=0; //timer variable
 int tHIGH=0;
 int tLED=0;
 int tcur=0;
+
+String incomingByte; //Using .readstring currently, use int(ascii) for .read
 
 struct timer
 {
@@ -36,15 +39,18 @@ void setup() {
   pinMode(R, OUTPUT);
   pinMode(S, OUTPUT);
   pinMode(LED_PIN, OUTPUT);
+  pinMode(ONBOARD_LED, OUTPUT);
+
   FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(brightness);
   //Serial.setTimeout(200); //Currently Serial.readString waits for 200ms, might rewrite in the future to allow terminator \n
-  Serial.begin(115200);
-  Serial.println("Initalising Program");
+
+  Serial.begin(9600);
+  printto("Initalising Program");
 }
 
 void lightall(CRGB color){
-  fill_solid( leds, NUM_LEDS, color);
+  fill_solid(leds, NUM_LEDS, color);
   FastLED.show();
 }
 
@@ -68,31 +74,32 @@ void printto(String text){
 void readSerial(){
   if (Serial.available() > 0) {
     
-    //incomingByte = Serial.read();
-    //printto("Reading String");
-    incomingByte = Serial.readString();
-    printto(incomingByte); //DEBUG
-    //previousByte = incomingByte;
+    incomingByte = Serial.readStringUntil('\n');
+    printto("Reading String: " + incomingByte); //DEBUG
 
     FlightState=String(incomingByte[0]);
-
-//    if (String(incomingByte[0]) == "H") {
-//      AlarmState==1;
-//    }else if (String(incomingByte[0]) == "L") {
-//      AlarmState=0;
-//    }
-
+    printto("Flight mode is:" + FlightState);
+//
+////    if (String(incomingByte[0]) == "H") {
+////      AlarmState==1;
+////    }else if (String(incomingByte[0]) == "L") {
+////      AlarmState=0;
+////    }
+//
     String batterylevel = String(incomingByte);
     batterylevel.remove(0,1); //Remove flight mode to leave string with batterylevel
-    batterylevelint = batterylevel.toInt()/10;
-    batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
+    batterylevelint = batterylevel.toInt();
+    printto("Battery level is: "+String(batterylevelint));
   }
+
 }
 
 //Function to Store State of the previous flightmode so that the LED animations can be contionusly driven with delays
 void flightmode(){
   extern String FlightState;
-  if(FlightState=="H"){
+  extern String prevFlightState;
+  if(FlightState != prevFlightState){
+    if(FlightState=="H"){
       printto("Alarm On");
       if (millis()>Alarm.low){ //Sequence has finished
         Alarm.high=rand()%200+10+millis(); // Regenerate new timing variables
@@ -107,29 +114,33 @@ void flightmode(){
         digitalWrite(R, HIGH);
         digitalWrite(S, LOW);
       }
-//  }else if(FlightState="L"){
-//      printto("Alarm Off");
-//      digitalWrite(L, LOW);
-//      digitalWrite(R, LOW);
-//      digitalWrite(S, LOW);
-  }else if(FlightState=="R"){
-      printto("Scout mode");
-      digitalWrite(L, HIGH);
-      digitalWrite(R, HIGH);
-      for(int i=0; i<15; i++) leds[i]=CRGB::Pink;
-  }else if(FlightState=="O"){
-      printto("Offboard mode");
-      digitalWrite(L, LOW);
-      digitalWrite(R, LOW);
-      digitalWrite(S, LOW);
-      for(int i=0; i<15; i++) leds[i]=CRGB::Purple;
-  }else if(FlightState=="S"){
-      printto("Stabalize mode");
-      digitalWrite(L, LOW);
-      digitalWrite(R, LOW);
-      digitalWrite(S, LOW);
-      for(int i=0; i<15; i++) leds[i]=CRGB::Blue;
+  //  }else if(FlightState="L"){
+  //      printto("Alarm Off");
+  //      digitalWrite(L, LOW);
+  //      digitalWrite(R, LOW);
+  //      digitalWrite(S, LOW);
+    }else if(FlightState=="R"){
+        printto("Scout mode");
+        digitalWrite(L, HIGH);
+        digitalWrite(R, HIGH);
+        for(int i=0; i<15; i++) leds[i]=CRGB::Pink;
+    }else if(FlightState=="O"){
+        printto("Offboard mode");
+        digitalWrite(L, LOW);
+        digitalWrite(R, LOW);
+        digitalWrite(S, LOW);
+        for(int i=0; i<15; i++) leds[i]=CRGB::Purple;
+    }else if(FlightState=="S"){
+        printto("Stabalize mode");
+        digitalWrite(L, LOW);
+        digitalWrite(R, LOW);
+        digitalWrite(S, LOW);
+        for(int i=0; i<15; i++) leds[i]=CRGB::Blue;
   }
+  prevFlightState=FlightState;
+  }
+  
+  
 }
 
 void test(){
@@ -172,7 +183,7 @@ void test(){
   Serial.print("test ");
   Serial.println(FlightState);
   flightmode();
-  batterydisplay(10);
+  batterydisplay(5);
   FastLED.show();
   delay(1000);
   FastLED.clear();
@@ -190,17 +201,51 @@ void test(){
   Serial.print("test ");
   Serial.println(FlightState);
   flightmode();
-  batterydisplay(10);
+  batterydisplay(5);
   FastLED.show();
   delay(1000);
 
 }
 
+
+
 void loop() {
-  readSerial();
-  flightmode();
+//  printto("looping");
+//  readSerial();
+//  flightmode();
+//  batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
+  
   FastLED.show();
-//  test();
+//  delay(500); // To prevent microcontroller from restarting due to fastled.show
+ 
+  test();
+
+  
+
+
+//   if (Serial.available() > 0) {
+//    // read the oldest byte in the serial buffer:
+//    incomingByte = Serial.readStringUntil('\n');
+////    previousByte = incomingByte;
+//    // if it's a capital H (ASCII 72), turn on the LED:
+//      if(incomingByte== "S5"){
+//        Serial.println("HIGH");
+//        digitalWrite(10,HIGH);
+//        fill_solid(leds, NUM_LEDS, CRGB::Red);
+//        FastLED.show();
+//      }
+//      if(incomingByte== "R10"){
+//        Serial.println("LOW");
+//        digitalWrite(10,LOW);
+//        fill_solid(leds, NUM_LEDS, CRGB::White);
+//        FastLED.show();
+//      }
+//      Serial.print("I received: ");
+//      Serial.println(incomingByte);
+//   }
+
+    
+    
 }
 
 

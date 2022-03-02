@@ -6,11 +6,12 @@ import time
 from mavros_msgs.msg import State
 from sensor_msgs.msg import BatteryState
 
-# Serial connection to teensy
+# Serial connection
+# Run ls /dev/serial/by-id/* to check id in linux or check the com port in the arduino ide
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
-ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A1:0F:04-if00', 115200)
+ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
 
 
 ## TODO, ADD CHANNEL 5 BYPASS
@@ -64,12 +65,13 @@ def processor():
         batterylevel= round(batterylevel*10)
         sendstring+=str(int(batterylevel))
 
-        if sendstring != previnput:
-            print("Sending to ESP32",sendstring)
-            ser.write(sendstring)
+        # if sendstring != previnput:
+        #     print("Sending to ESP32",sendstring)
+        #     ser.write(sendstring)
 
-        # #for testing
-        # ser.write(sendstring)
+        #for testing
+        print("Sending to ESP32",sendstring)
+        ser.write(sendstring)
 
         previnput=sendstring
 
@@ -92,8 +94,16 @@ if __name__ == '__main__':
     hrisub = rospy.Subscriber("/hri_user_input", Int32, callback)
     statesub = rospy.Subscriber("uav0/mavros/state", State, statecallback)
     batterysub = rospy.Subscriber("uav0/mavros/battery", BatteryState, batterycallback)
-    processor()
+    # processor()
     rospy.spin()
+    while True:
+        ser.write(1)
+        print(1)
+        time.sleep(1)
+        ser.write(0)
+        print(0)
+        time.sleep(1)
+
 
 
 #Test Publish
