@@ -1,0 +1,22 @@
+Removed Pin From Net: NetName=GND Pin=U?-2
+Removed Pin From Net: NetName=NetLED LT_2 Pin=U?-3
+Removed Member From Class: ClassName=Aurora Member=U?
+Added Component: Designator=QLT(SOT95P240X110-3N)
+Add component (AddParameter): Name = "Availability"; Value = "Unavailable"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "{'manufacturer': u'Diodes Zetex'}"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "DMG6968U-7"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Add Component: Footprint Not Found XT30PWM
+Added Pin To Net: NetName=GND Pin=QLT-2
+Added Pin To Net: NetName=NetLED LT_2 Pin=QLT-3
+Add Pin To Net: Unknown Pin: Pin XT30_12V_IN-1
+Add Pin To Net: Unknown Pin: Pin XT30_12V_IN-2
+Add Net: Net with name "NetLED RB_2" already exists
+Added Pin To Net: NetName=NetQLT_1 Pin=QLT-1
+Added Pin To Net: NetName=NetQLT_1 Pin=RLT-2
+Added Net: Name=NetQLT_1
+Added Member To Class: ClassName=Aurora Member=Component LED RB S2B-PH-SM4-TB(LF)(SN)
+Added Member To Class: ClassName=Aurora Member=Component QLT DMG6968U-7
+Add Class Member: Failed to add class member : Component XT30_12V_IN XT30PW-M

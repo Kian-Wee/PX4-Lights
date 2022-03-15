@@ -1,0 +1,39 @@
+Change Component Designator: OldDesignator=A? NewDesignator=Tiny2040
+Add Component: Footprint Not Found SOT95P240X110-3N
+Add Component: Footprint Not Found SOT95P240X110-3N
+Add Component: Footprint Not Found SOT95P240X110-3N
+Add Component: Footprint Not Found SOT95P240X110-3N
+Add Component: Footprint Not Found SOT95P240X110-3N
+Add Component: Footprint Not Found XT30PWM
+Add Pin To Net: Unknown Pin: Pin QLB-1
+Add Pin To Net: Unknown Pin: Pin QLB-2
+Add Pin To Net: Unknown Pin: Pin QLT-1
+Add Pin To Net: Unknown Pin: Pin QLT-2
+Add Pin To Net: Unknown Pin: Pin QRB-1
+Add Pin To Net: Unknown Pin: Pin QRB-2
+Add Pin To Net: Unknown Pin: Pin QRT-1
+Add Pin To Net: Unknown Pin: Pin QRT-2
+Add Pin To Net: Unknown Pin: Pin QSPEAKER-1
+Add Pin To Net: Unknown Pin: Pin QSPEAKER-2
+Add Pin To Net: Unknown Pin: Pin XT30_12V_IN-1
+Add Pin To Net: Unknown Pin: Pin XT30_12V_IN-2
+Added Pin To Net: NetName=NetLED LB_2 Pin=LED LB-2
+Added Pin To Net: NetName=NetLED LB_2 Pin=Tiny2040-1
+Added Net: Name=NetLED LB_2
+Added Pin To Net: NetName=NetLED LT_2 Pin=LED LT-2
+Added Pin To Net: NetName=NetLED LT_2 Pin=Tiny2040-0
+Added Net: Name=NetLED LT_2
+Added Pin To Net: NetName=NetLED RB_2 Pin=LED RB-2
+Added Pin To Net: NetName=NetLED RB_2 Pin=Tiny2040-3
+Added Net: Name=NetLED RB_2
+Add Net: Net with name "NetLED RB_2" already exists
+Added Pin To Net: NetName=NetLED RT_2 Pin=LED RT-2
+Added Pin To Net: NetName=NetLED RT_2 Pin=Tiny2040-2
+Added Net: Name=NetLED RT_2
+Added Member To Class: ClassName=Aurora Member=Component LED RB S2B-PH-SM4-TB(LF)(SN)
+Add Class Member: Failed to add class member : Component QLB DMG6968U-7
+Add Class Member: Failed to add class member : Component QLT DMG6968U-7
+Add Class Member: Failed to add class member : Component QRB DMG6968U-7
+Add Class Member: Failed to add class member : Component QRT DMG6968U-7
+Add Class Member: Failed to add class member : Component QSPEAKER DMG6968U-7
+Add Class Member: Failed to add class member : Component XT30_12V_IN XT30PW-M
