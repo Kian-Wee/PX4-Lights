@@ -1,3 +1,5 @@
+//TODO, CHANGE BUZZER TO NOT INTERRUPTING
+
 #include "FastLED.h"
 #define NUM_LEDS 25
 CRGB leds[NUM_LEDS];
@@ -101,24 +103,28 @@ void flightmode(){
   if(FlightState != prevFlightState){
     if(FlightState=="H"){
       printto("Alarm On");
-      if (millis()>Alarm.low){ //Sequence has finished
-        Alarm.high=rand()%200+10+millis(); // Regenerate new timing variables
-        Alarm.low=rand()%200+10+Alarm.high;
-      }else if (millis()<Alarm.high){
-        digitalWrite(L, LOW);
-        digitalWrite(R, HIGH);
-        digitalWrite(S, HIGH);
-        for(int i=0; i<15; i++) leds[i]=CRGB::Red;
-      }else if (millis()<Alarm.low){
-        digitalWrite(L, LOW);
-        digitalWrite(R, HIGH);
-        digitalWrite(S, LOW);
-      }
-  //  }else if(FlightState="L"){
-  //      printto("Alarm Off");
-  //      digitalWrite(L, LOW);
-  //      digitalWrite(R, LOW);
-  //      digitalWrite(S, LOW);
+      // if (millis()>Alarm.low){ //Sequence has finished
+      //   Alarm.high=rand()%200+10+millis(); // Regenerate new timing variables
+      //   Alarm.low=rand()%200+10+Alarm.high;
+      // }else if (millis()<Alarm.high){
+      //   digitalWrite(L, LOW);
+      //   digitalWrite(R, HIGH);
+      //   digitalWrite(S, HIGH);
+      //   for(int i=0; i<15; i++) leds[i]=CRGB::Red;
+      // }else if (millis()<Alarm.low){
+      //   digitalWrite(L, LOW);
+      //   digitalWrite(R, HIGH);
+      //   digitalWrite(S, LOW);
+      // }
+      digitalWrite(L, LOW);
+      digitalWrite(R, HIGH);
+      digitalWrite(S, HIGH);
+      delay(rand()%200+10);
+      digitalWrite(R, LOW);
+      digitalWrite(S, LOW);
+      digitalWrite(L, HIGH);
+      delay(rand()%200+10);
+
     }else if(FlightState=="R"){
         printto("Scout mode");
         digitalWrite(L, HIGH);
@@ -210,15 +216,15 @@ void test(){
 
 
 void loop() {
-//  printto("looping");
-//  readSerial();
-//  flightmode();
+ printto("looping");
+ readSerial();
+ flightmode();
 //  batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
   
   FastLED.show();
 //  delay(500); // To prevent microcontroller from restarting due to fastled.show
  
-  test();
+  // test();
 
   
 
