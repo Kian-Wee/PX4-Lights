@@ -1,0 +1,17 @@
+Change Physical Footprint: Designator=12V Old Footprint=XT30PB New Footprint=XT30PB
+Change Physical Footprint: Designator=LED LB Old Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V New Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V
+Change Physical Footprint: Designator=LED LT Old Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V New Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V
+Change Physical Footprint: Designator=LED RB Old Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V New Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V
+Change Physical Footprint: Designator=LED RT Old Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V New Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V
+Change Physical Footprint: Designator=QLB Old Footprint=SOT95P240X110-3N New Footprint=SOT95P240X110-3N
+Change Physical Footprint: Designator=QLT Old Footprint=SOT95P240X110-3N New Footprint=SOT95P240X110-3N
+Change Physical Footprint: Designator=QRB Old Footprint=SOT95P240X110-3N New Footprint=SOT95P240X110-3N
+Change Physical Footprint: Designator=QRT Old Footprint=SOT95P240X110-3N New Footprint=SOT95P240X110-3N
+Change Physical Footprint: Designator=QSPEAKER Old Footprint=SOT95P240X110-3N New Footprint=SOT95P240X110-3N
+Change Physical Footprint: Designator=RLB Old Footprint=FP-CRCW1206-e3-MFG New Footprint=FP-CRCW1206-e3-MFG
+Change Physical Footprint: Designator=RLT Old Footprint=FP-CRCW1206-e3-MFG New Footprint=FP-CRCW1206-e3-MFG
+Change Physical Footprint: Designator=RRB Old Footprint=FP-CRCW1206-e3-MFG New Footprint=FP-CRCW1206-e3-MFG
+Change Physical Footprint: Designator=RRT Old Footprint=FP-CRCW1206-e3-MFG New Footprint=FP-CRCW1206-e3-MFG
+Change Physical Footprint: Designator=RS Old Footprint=FP-CRCW1206-e3-MFG New Footprint=FP-CRCW1206-e3-MFG
+Change Physical Footprint: Designator=SPEAKER Old Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V New Footprint=JST- S2B-PH-SM4-TB(LF)(SN)-2_V
+Change Physical Footprint: Designator=Tiny2040 Old Footprint=TINY2040 New Footprint=TINY2040

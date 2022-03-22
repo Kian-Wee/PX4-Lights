@@ -1,0 +1,11 @@
+Removed Pin From Net: NetName=NetQSPEAKER_3 Pin=Tiny2040-0
+Removed Pin From Net: NetName=NetLED LB_2 Pin=Tiny2040-1
+Removed Pin From Net: NetName=NetLED LT_2 Pin=Tiny2040-5
+Removed Pin From Net: NetName=NetLED RT_2 Pin=Tiny2040-A0
+Removed Pin From Net: NetName=NetLED RB_2 Pin=Tiny2040-A3
+Added Pin To Net: NetName=NetRLB_1 Pin=Tiny2040-1
+Added Pin To Net: NetName=NetRLT_1 Pin=Tiny2040-5
+Added Pin To Net: NetName=NetQSPEAKER_3 Pin=Tiny2040-7
+Added Pin To Net: NetName=NetRRT_1 Pin=Tiny2040-A0
+Added Pin To Net: NetName=NetRRB_1 Pin=Tiny2040-A3
+Added Room: Name=Aurora
