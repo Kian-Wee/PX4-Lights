@@ -11,7 +11,8 @@ from sensor_msgs.msg import BatteryState
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
-ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
+ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B6E5638-if00', 115200) #Borealis 1
+#ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
 
 
 ## TODO, ADD CHANNEL 5 BYPASS
@@ -31,9 +32,10 @@ batterymax=4.2
 # Currently latches on to the previous input, ie requires input 0 to turn it off
 def processor():
 
-    global previnput, batterymin, batterymax, flightmode, battery
+    global previnput, batterymin, batterymax, flightmode, battery, HRI
 
     while not rospy.is_shutdown():
+
         user_input=HRI
 
         sendstring = '' #COMBINE BATTERY WITH FLIGHT MODE to reduce serial load
@@ -59,21 +61,24 @@ def processor():
         elif flightmode=='STABILIZED':
             print("Stabalized mode")
             sendstring+='S'
-
+        else:
+            sendstring+='D' # Assume disarmed in all other cases so that LED Turns off, TODO change
 
         batterylevel= (battery-batterymin)/(batterymax-batterymin)
         batterylevel= round(batterylevel*10)
         sendstring+=str(int(batterylevel))
 
-        # if sendstring != previnput:
-        #     print("Sending to ESP32",sendstring)
-        #     ser.write(sendstring)
+        if sendstring != previnput:
+            print("Sending to ESP32",sendstring)
+            ser.write(sendstring)
 
-        #for testing
-        print("Sending to ESP32",sendstring)
-        ser.write(sendstring)
+        # #for testing
+        # print("Sending to Microcontroller",sendstring)
+        # ser.write(sendstring)
 
         previnput=sendstring
+
+        time.sleep(1)
 
 def callback(msg):
     global HRI
@@ -94,17 +99,12 @@ if __name__ == '__main__':
     hrisub = rospy.Subscriber("/hri_user_input", Int32, callback)
     statesub = rospy.Subscriber("uav0/mavros/state", State, statecallback)
     batterysub = rospy.Subscriber("uav0/mavros/battery", BatteryState, batterycallback)
-    # processor()
-    rospy.spin()
+
     while True:
-        ser.write(1)
-        print(1)
-        time.sleep(1)
-        ser.write(0)
-        print(0)
-        time.sleep(1)
+        processor()
+        rospy.spin()
 
 
 
 #Test Publish
-#rostopic pub /hri_user_input std_msgs/Int32 1
+#rostopic pub -r 2 /hri_user_input std_msgs/Int32 1
