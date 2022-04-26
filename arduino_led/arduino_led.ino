@@ -41,6 +41,8 @@ timer Alarm = {
 };
 
 void setup() {
+  pinMode(LB, OUTPUT);
+  pinMode(RB, OUTPUT);
   pinMode(L, OUTPUT);
   pinMode(R, OUTPUT);
   pinMode(S, OUTPUT);
@@ -121,43 +123,65 @@ void flightmode(){
     //   digitalWrite(R, HIGH);
     //   digitalWrite(S, LOW);
     // }
+    digitalWrite(LB, LOW);
     digitalWrite(L, LOW);
+    digitalWrite(RB, HIGH);
     digitalWrite(R, HIGH);
     digitalWrite(S, HIGH);
     delay(rand()%200+10);
+    digitalWrite(RB, LOW);
     digitalWrite(R, LOW);
-    digitalWrite(S, LOW);
+    digitalWrite(LB, HIGH);
     digitalWrite(L, HIGH);
+    digitalWrite(S, LOW);
     delay(rand()%200+10);
   
   }else if(FlightState != prevFlightState){
 
     if(FlightState=="R"){
         printto("Scout mode");
+        digitalWrite(LB, HIGH);
         digitalWrite(L, HIGH);
+        digitalWrite(RB, HIGH);
         digitalWrite(R, HIGH);
         // for(int i=0; i<15; i++) leds[i]=CRGB::Pink;
     }else if(FlightState=="O"){
         printto("Offboard mode");
+        digitalWrite(LB, LOW);
         digitalWrite(L, LOW);
+        digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
         // for(int i=0; i<15; i++) leds[i]=CRGB::Purple;
     }else if(FlightState=="S"){
         printto("Stabalize mode");
+        digitalWrite(LB, LOW);
         digitalWrite(L, LOW);
+        digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
         // for(int i=0; i<15; i++) leds[i]=CRGB::Blue;
   }else if(FlightState=="D"){
         printto("Disarmed");
+        digitalWrite(LB, LOW);
         digitalWrite(L, LOW);
+        digitalWrite(RB, LOW);
+        digitalWrite(R, LOW);
+        digitalWrite(S, LOW);
+  // This is only used when mavros is not turned on and the alarm needs to be off
+  }else if(FlightState=="L"){
+        printto("Alarm off");
+        digitalWrite(LB, LOW);
+        digitalWrite(L, LOW);
+        digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
   }
   prevFlightState=FlightState;
   }else{
+      digitalWrite(LB, LOW);
       digitalWrite(L, LOW);
+      digitalWrite(RB, LOW);
       digitalWrite(R, LOW);
       digitalWrite(S, LOW);
   }
@@ -221,7 +245,7 @@ void flightmode(){
 
 //   FlightState="S";
 //   Serial.print("test ");
-//   Serial.println(FlightState);
+//   Serial.println(FlightState);      
 //   flightmode();
 //   batterydisplay(5);
 //   FastLED.show();
