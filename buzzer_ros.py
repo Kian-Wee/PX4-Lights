@@ -12,7 +12,7 @@ import os
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
-ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B6E5638-if00', 115200)
+ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B675D39-if00', 115200)
 # ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B1A4E39-if00', 115200) #Borealis 1
 #ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
 
@@ -108,8 +108,8 @@ def batterycallback(msg):
     battery=sum(batterytemp)/len(batterytemp)
 
 if __name__ == '__main__':
-    rospy.init_node('alarm') 
-    hrisub = rospy.Subscriber(drone_name+"/hri_user_input", Int32, callback)
+    rospy.init_node(drone_name + '_alarm') 
+    hrisub = rospy.Subscriber(drone_name + "/hri_user_input", Int32, callback)
     # statesub = rospy.Subscriber("uav0/mavros/state", State, statecallback)
     # batterysub = rospy.Subscriber("uav0/mavros/battery", BatteryState, batterycallback)
 
