@@ -1,5 +1,3 @@
-#include <LiquidCrystal.h>
-
 //TODO, CHANGE BUZZER TO NOT INTERRUPTING
 
 //#include "FastLED.h"
@@ -7,10 +5,10 @@
 //CRGB leds[NUM_LEDS];
 
 const int L=3; //Left LED
-const int R=A0; //Right LED
+const int S=A0; //Right LED
 const int LB=0; //Left LED Bottom (UNUSED)
 const int RB=A3; //Right LED Bottom (UNUSED)
-const int S=A1; //Speaker
+const int R=A1; //Speaker
 #define LED_PIN 8 //WS2812B LED DIGITAL PIN 8
 #define ONBOARD_LED 10 //13 for arduino mega
 
@@ -18,7 +16,7 @@ bool debug=0;
 
 bool AlarmState=0;
 int batterylevelint = 0;
-String FlightState;
+String FlightState="R";
 String prevFlightState;
 int brightness=5;
 
@@ -53,9 +51,10 @@ void setup() {
 //  FastLED.setBrightness(brightness);
   //Serial.setTimeout(200); //Currently Serial.readString waits for 200ms, might rewrite in the future to allow terminator \n
 
+
+
   Serial.begin(115200);
   printto("Initalising Program");
-  FlightState="H";
 }
 
 // void lightall(CRGB color){

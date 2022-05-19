@@ -38,6 +38,8 @@ def processor():
 
     rate = rospy.Rate(2)
 
+    rospy.on_shutdown(quit)
+
     while not rospy.is_shutdown():
         
         user_input=HRI
@@ -85,6 +87,11 @@ def processor():
 
         # time.sleep(1)
         rate.sleep()
+
+def quit():
+    print('BUZZER IS SHUTTING DOWN')
+    ser.write('D0')
+    rospy.signal_shutdown("BUZZER SHUTTING DOWN")
 
 def callback(msg):
     global HRI
