@@ -16,7 +16,7 @@ bool debug=0;
 
 bool AlarmState=0;
 int batterylevelint = 0;
-String FlightState="R";
+String FlightState;
 String prevFlightState;
 int brightness=5;
 
