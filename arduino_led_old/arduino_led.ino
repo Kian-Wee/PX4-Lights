@@ -1,10 +1,8 @@
 //TODO, CHANGE BUZZER TO NOT INTERRUPTING
 
-#include "src/FastLED/src/FastLED.h"
 //#include "FastLED.h"
 //#define NUM_LEDS 25
 //CRGB leds[NUM_LEDS];
-
 
 const int L=3; //Left LED
 const int S=A0; //Right LED
