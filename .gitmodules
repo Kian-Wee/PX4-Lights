@@ -1,0 +1,4 @@
+[submodule "arduino_led/src/FastLED"]
+	path = arduino_led/src/FastLED
+	url = https://github.com/somewhatlurker/FastLED
+	branch = rp2040
