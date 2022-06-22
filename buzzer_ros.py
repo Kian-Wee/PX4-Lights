@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from std_msgs.msg import Int32
+from std_msgs.msg import String
 import serial
 import time
 from mavros_msgs.msg import State
@@ -22,97 +22,92 @@ ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B53
 time.sleep(2) # wait for the serial connection to initialize
 
 drone_name = os.getenv('DRONE_NAME') #environment variable set in bashrc(or exported in terminal)
-previnput=''
-HRI=0
-armed=None
-flightmode=None
-battery=0
+
 
 batterymin=3.2
 batterymax=4.2
 
 # Turns on buzzer when user input is on and turns off buzzer when user input is off
 # Currently latches on to the previous input, ie requires input 0 to turn it off
-def processor():
+class processor():
 
-    global previnput, batterymin, batterymax, flightmode, battery, HRI
+    def __init__(self):
+        rospy.Subscriber(drone_name + "/hri_mode", String, self.modecallback())
+        rospy.Subscriber(drone_name + "/mavros/state", State, self.statecallback())
+        rospy.Subscriber(drone_name + "/mavros/battery", BatteryState, self.batterycallback())
+        rospy.Subscriber(drone_name + "/planner_staus",  String, self.plannerstatecallback())
 
-    rate = rospy.Rate(2)
+        self.previnput=''
+        self.usermode=''
+        self.armed=None
+        self.flightmode=None
+        self.battery=0
+        self.plannerstate=''
 
-    rospy.on_shutdown(quit)
+        rate = rospy.Rate(2)
 
-    while not rospy.is_shutdown():
-        
-        user_input=HRI
+        rospy.on_shutdown(self.quit())
 
-        sendstring = '' #COMBINE BATTERY WITH FLIGHT MODE to reduce serial load
+        while not rospy.is_shutdown():
 
-        if armed==False:
-            sendstring+='D'
-        elif user_input ==1: #NOTIFY HRI
-            print("Alarm is on")
-            sendstring+='H'
-        elif user_input ==2:
-            print("Scout mode")
-            sendstring+='R'
-        # elif user_input <0:
-        #     print("Program Exiting")
-        #     sendstring+='L'
-        #     ser.close()
-        elif flightmode=='OFFBOARD':
-            print("Offboard mode")
-            sendstring+='O'
-        elif flightmode=='STABILIZED':
-            print("Stabalized mode")
-            sendstring+='S'
-        elif user_input ==0:
-            #print("Alarm is off")
-            sendstring+='L'
-        else:
-	        #print("Disarming")
-            sendstring+='D'
+            self.sentstring = '' #Combines all output to reduce serial load
 
-        batterylevel= (battery-batterymin)/(batterymax-batterymin)
-        batterylevel= round(batterylevel*10)
-        sendstring+=str(int(batterylevel))
+            if self.armed==False:
+                self.sentstring+='D'
+            elif self.usermode =="Distract":
+                print("Alarm is on")
+                self.sentstring+='H'
+            elif self.usermode =="Sweep":
+                print("Scout mode")
+                self.sentstring+='R'
+            elif self.flightmode=='OFFBOARD':
+                print("Offboard mode")
+                self.sentstring+='O'
+            elif self.flightmode=='STABILIZED':
+                print("Stabalized mode")
+                self.sentstring+='S'
+            else:
+                #print("Disarming")
+                self.sentstring+='D'
 
-        if sendstring != previnput:
-            print("Sending to ESP32",sendstring)
-            ser.write(sendstring)
+            batterylevel= (self.battery-batterymin)/(batterymax-batterymin)
+            batterylevel= round(batterylevel*10)
+            self.sentstring+=str(int(batterylevel))
 
-        # #for testing
-        # print("Sending to Microcontroller",sendstring)
-        # ser.write(sendstring)
+            if self.sentstring != self.previnput:
+                print("Sending to ESP32",self.sentstring)
+                ser.write(self.sentstring)
 
-        previnput=sendstring
+            # #for testing
+            # print("Sending to Microcontroller",self.sentstring)
+            # ser.write(self.sentstring)
 
-        # time.sleep(1)
-        rate.sleep()
+            self.previnput=self.sentstring
 
-def quit():
-    print('BUZZER IS SHUTTING DOWN')
-    ser.write('D0')
-    rospy.signal_shutdown("BUZZER SHUTTING DOWN")
+            rate.sleep()
 
-def callback(msg):
-    global HRI
-    HRI = msg.data
+    def quit(self):
+        # print('BUZZER IS SHUTTING DOWN')
+        ser.write('D0')
+        ser.close()
+        # rospy.signal_shutdown("BUZZER SHUTTING DOWN")
 
-def statecallback(msg):
-    global flightmode, armed
-    flightmode = msg.mode
-    armed = msg.armed
+    def modecallback(self,msg):
+        self.usermode = msg.data
 
-def batterycallback(msg):
-    global battery
-    batterytemp=msg.cell_voltage
-    battery=sum(batterytemp)/len(batterytemp)
+    def statecallback(self,msg):
+        self.flightmode = msg.mode
+        self.armed = msg.armed
+
+    def batterycallback(self,msg):
+        batterytemp=msg.cell_voltage
+        self.battery=sum(batterytemp)/len(batterytemp)
+
+    def plannerstatecallback(self,msg):
+        self.plannerstate=msg.data
 
 if __name__ == '__main__':
     rospy.init_node(drone_name + '_lights') 
-    hrisub = rospy.Subscriber(drone_name + "/hri_user_input", Int32, callback)
-    # statesub = rospy.Subscriber("uav0/mavros/state", State, statecallback)
-    # batterysub = rospy.Subscriber("uav0/mavros/battery", BatteryState, batterycallback)
 
     while True:
         processor()
