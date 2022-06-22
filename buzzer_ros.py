@@ -101,7 +101,10 @@ class processor():
 
     def batterycallback(self,msg):
         batterytemp=msg.cell_voltage
-        self.battery=sum(batterytemp)/len(batterytemp)
+        if batterytemp == []:
+            self.battery = 0
+        else:
+            self.battery=sum(batterytemp)/len(batterytemp)
 
     def plannerstatecallback(self,msg):
         self.plannerstate=msg.data
