@@ -20,6 +20,8 @@ bool AlarmState=0;
 int batterylevelint = 0;
 String FlightState;
 String prevFlightState;
+String PlannerState;
+String prevPlannerState;
 int brightness=5;
 
 int tLOW=0; //timer variable
@@ -89,6 +91,9 @@ void readSerial(){
 
     FlightState=String(incomingByte[0]);
     printto("Flight mode is:" + FlightState);
+
+    PlannerState=String(incomingByte[0]);
+    printto("Planner mode is:" + PlannerState);
 //
 ////    if (String(incomingByte[0]) == "H") {
 ////      AlarmState==1;
@@ -97,7 +102,7 @@ void readSerial(){
 ////    }
 //
     String batterylevel = String(incomingByte);
-    batterylevel.remove(0,1); //Remove flight mode to leave string with batterylevel
+    batterylevel.remove(0,2); //Remove flight mode to leave string with batterylevel
     batterylevelint = batterylevel.toInt();
     printto("Battery level is: "+String(batterylevelint));
   }
