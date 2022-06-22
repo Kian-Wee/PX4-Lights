@@ -32,10 +32,10 @@ batterymax=4.2
 class processor():
 
     def __init__(self):
-        rospy.Subscriber(drone_name + "/hri_mode", String, self.modecallback())
-        rospy.Subscriber(drone_name + "/mavros/state", State, self.statecallback())
-        rospy.Subscriber(drone_name + "/mavros/battery", BatteryState, self.batterycallback())
-        rospy.Subscriber(drone_name + "/planner_staus",  String, self.plannerstatecallback())
+        rospy.Subscriber(drone_name + "/hri_mode", String, self.modecallback)
+        rospy.Subscriber(drone_name + "/mavros/state", State, self.statecallback)
+        rospy.Subscriber(drone_name + "/mavros/battery", BatteryState, self.batterycallback)
+        rospy.Subscriber(drone_name + "/planner_staus",  String, self.plannerstatecallback)
 
         self.previnput=''
         self.usermode=''
@@ -46,7 +46,7 @@ class processor():
 
         rate = rospy.Rate(2)
 
-        rospy.on_shutdown(self.quit())
+        rospy.on_shutdown(self.quit)
 
         while not rospy.is_shutdown():
 
