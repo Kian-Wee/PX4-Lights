@@ -12,9 +12,9 @@ import os
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
-ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B534438-if00', 115200)
+#ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B534438-if00', 115200)
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B675D39-if00', 115200)
-# ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B1A4E39-if00', 115200) #Borealis 1
+ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B1A4E39-if00', 115200) #Borealis 1
 #ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
 
 ## TODO, ADD CHANNEL 5 BYPASS
@@ -101,7 +101,7 @@ class processor():
 
     def batterycallback(self,msg):
         batterytemp=msg.cell_voltage
-        if batterytemp == []:
+        if batterytemp == [] or batterytemp == ():
             self.battery = 0
         else:
             self.battery=sum(batterytemp)/len(batterytemp)
