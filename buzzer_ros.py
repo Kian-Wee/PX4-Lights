@@ -12,12 +12,11 @@ import os
 #ser = serial.Serial('/dev/ttyUSB0', 9600)
 #ser = serial.Serial('COM10', 9600) 
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B711139-if00', 115200)
-ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B534438-if00', 115200)
+ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B2D4639-if00', 115200)
+#ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B534438-if00', 115200) #2
 #ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B675D39-if00', 115200)
-# ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B1A4E39-if00', 115200) #Borealis 1
+#ser = serial.Serial('/dev/serial/by-id/usb-Raspberry_Pi_PicoArduino_DF6050A04B1A4E39-if00', 115200) #1
 #ser = serial.Serial('/dev/serial/by-id/usb-Espressif_USB_JTAG_serial_debug_unit_84:F7:03:A0:FC:F0-if00', 115200)
-
-## TODO, ADD CHANNEL 5 BYPASS
 
 time.sleep(2) # wait for the serial connection to initialize
 
@@ -55,16 +54,16 @@ class processor():
             if self.armed==False:
                 self.sentstring+='D'
             elif self.usermode =="Distract":
-                print("Alarm is on")
+                # print("Alarm is on")
                 self.sentstring+='H'
             elif self.usermode =="Sweep":
-                print("Scout mode")
+                # print("Scout mode")
                 self.sentstring+='R'
             elif self.flightmode=='OFFBOARD':
-                print("Offboard mode")
+                # print("Offboard mode")
                 self.sentstring+='O'
             elif self.flightmode=='STABILIZED':
-                print("Stabalized mode")
+                # print("Stabalized mode")
                 self.sentstring+='S'
             else:
                 #print("Disarming")

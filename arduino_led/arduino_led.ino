@@ -2,16 +2,15 @@
 
 #include "src/FastLED/src/FastLED.h"
 //#include "FastLED.h"
-//#define NUM_LEDS 25
-//CRGB leds[NUM_LEDS];
-
+#define NUM_LEDS 4
+CRGB leds[NUM_LEDS];
 
 const int L=3; //Left LED
 const int S=A0; //Right LED
 const int LB=0; //Left LED Bottom (UNUSED)
 const int RB=A3; //Right LED Bottom (UNUSED)
 const int R=A1; //Speaker
-#define LED_PIN 8 //WS2812B LED DIGITAL PIN 8
+#define LED_PIN 7 //WS2812B LED DIGITAL PIN
 #define ONBOARD_LED 10 //13 for arduino mega
 
 bool debug=0;
@@ -51,31 +50,32 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(ONBOARD_LED, OUTPUT);
 
-//  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
-//  FastLED.setBrightness(brightness);
+  FastLED.addLeds<WS2812B, LED_PIN, BRG>(leds, NUM_LEDS);
+  FastLED.setBrightness(brightness);
   //Serial.setTimeout(200); //Currently Serial.readString waits for 200ms, might rewrite in the future to allow terminator \n
-
-
 
   Serial.begin(115200);
   printto("Initalising Program");
+
+  lightall(CRGB::Black);
+  FastLED.show();
 }
 
-// void lightall(CRGB color){
-//   fill_solid(leds, NUM_LEDS, color);
-//   FastLED.show();
-// }
+void lightall(CRGB color){
+   fill_solid(leds, NUM_LEDS, color);
+   FastLED.show();
+}
 
 // Use LEDs 15 to 25 where 15 to 20 is 50% to 100%, 21-25 is 0% to 50%
-// void batterydisplay(int batterylevel){
-//   for(int i=0 ; i < batterylevel; i++){
-//     if(i<5){
-//       leds[20+i]=CRGB::Red; //0->5,21->25
-//     }else{
-//       leds[10+i]=CRGB::Green; //5->10,15->20
-//     }
-//   }
-// }
+void batterydisplay(int batterylevel){
+  for(int i=0 ; i < batterylevel; i++){
+    if(i<5){
+      leds[20+i]=CRGB::Red; //0->5,21->25
+    }else{
+      leds[10+i]=CRGB::Green; //5->10,15->20
+    }
+  }
+}
 
 void printto(String text){
   if(debug==1){
@@ -87,20 +87,24 @@ void readSerial(){
   if (Serial.available() > 0) {
     
     incomingByte = Serial.readStringUntil('\n');
-    printto("Reading String: " + incomingByte); //DEBUG
+    printto("Reading String: " + incomingByte);
 
     FlightState=String(incomingByte[0]);
     printto("Flight mode is:" + FlightState);
 
-    PlannerState=String(incomingByte[0]);
+    PlannerState=String(incomingByte[1]);
     printto("Planner mode is:" + PlannerState);
-//
-////    if (String(incomingByte[0]) == "H") {
-////      AlarmState==1;
-////    }else if (String(incomingByte[0]) == "L") {
-////      AlarmState=0;
-////    }
-//
+
+   if (String(incomingByte[0]) == "H") {
+     AlarmState=1;
+   }else if (String(incomingByte[0]) == "L") {
+     AlarmState=0;
+   }
+
+//   if (String(incomingByte[1]) == "S"){
+//    FlightState=2;
+//   }
+
     String batterylevel = String(incomingByte);
     batterylevel.remove(0,2); //Remove flight mode to leave string with batterylevel
     batterylevelint = batterylevel.toInt();
@@ -129,6 +133,9 @@ void flightmode(){
     //   digitalWrite(R, HIGH);
     //   digitalWrite(S, LOW);
     // }
+    lightup(CRGB::Yellow,0);
+    FastLED.show();
+    
     digitalWrite(LB, LOW);
     digitalWrite(L, LOW);
     digitalWrite(RB, HIGH);
@@ -141,6 +148,7 @@ void flightmode(){
     digitalWrite(L, HIGH);
     digitalWrite(S, LOW);
     delay(rand()%200+10);
+    
   
   }else if(FlightState != prevFlightState){
 
@@ -150,7 +158,7 @@ void flightmode(){
         digitalWrite(L, HIGH);
         digitalWrite(RB, HIGH);
         digitalWrite(R, HIGH);
-        // for(int i=0; i<15; i++) leds[i]=CRGB::Pink;
+        lightup(CRGB::Orange, 0);
     }else if(FlightState=="O"){
         printto("Offboard mode");
         digitalWrite(LB, LOW);
@@ -158,7 +166,7 @@ void flightmode(){
         digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
-        // for(int i=0; i<15; i++) leds[i]=CRGB::Purple;
+        lightup(CRGB::Purple, 0);
     }else if(FlightState=="S"){
         printto("Stabalize mode");
         digitalWrite(LB, LOW);
@@ -166,7 +174,7 @@ void flightmode(){
         digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
-        // for(int i=0; i<15; i++) leds[i]=CRGB::Blue;
+        lightup(CRGB::Blue, 0);
   }else if(FlightState=="D"){
         printto("Disarmed");
         digitalWrite(LB, LOW);
@@ -174,6 +182,7 @@ void flightmode(){
         digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
+        lightup(CRGB::Black, 0);
   // This is only used when mavros is not turned on and the alarm needs to be off
   }else if(FlightState=="L"){
         printto("Alarm off");
@@ -182,6 +191,7 @@ void flightmode(){
         digitalWrite(RB, LOW);
         digitalWrite(R, LOW);
         digitalWrite(S, LOW);
+        lightup(CRGB::Black, 0);
   }
   prevFlightState=FlightState;
   }else{
@@ -190,9 +200,120 @@ void flightmode(){
       digitalWrite(RB, LOW);
       digitalWrite(R, LOW);
       digitalWrite(S, LOW);
+      lightup(CRGB::Black, 0);
   }
   
+}
+
+
+void plannermode(){
+  if(PlannerState != prevPlannerState){
+
+    if(PlannerState=="F"){
+        lightup(CRGB::Yellow, 1);
+    }else if(PlannerState=="A"){
+        lightup(CRGB::MediumOrchid, 1);
+    }else if(PlannerState=="M"){
+        lightup(CRGB::Green, 1);
+    }else if(PlannerState=="I"){
+        lightup(CRGB::Black, 1);
+  }
+  prevPlannerState=PlannerState;
+  }else{
+      lightup(CRGB::Black, 1);
+  }
   
+}
+
+
+void lightup(CRGB color, bool mode){
+  for(int i=0; i<NUM_LEDS; i++){
+    if (i % 2 == 1 && mode == 1) {
+      leds[i]=color;
+    }else if (i % 2 == 0 && mode == 0) {
+      leds[i]=color;
+    
+  }
+  }
+
+}
+
+void loop() {
+
+ printto("looping");
+ readSerial();
+ flightmode();
+ plannermode();
+ FastLED.show();
+ delay(1000);
+
+//batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
+
+ //delay(500); // To prevent microcontroller from restarting due to fastled.show
+
+//   if (Serial.available() > 0) {
+//    // read the oldest byte in the serial buffer:
+//    incomingByte = Serial.readStringUntil('\n');
+////    previousByte = incomingByte;
+//    // if it's a capital H (ASCII 72), turn on the LED:
+//      if(incomingByte== "S5"){
+//        Serial.println("HIGH");
+//        digitalWrite(10,HIGH);
+//        fill_solid(leds, NUM_LEDS, CRGB::Red);
+//        FastLED.show();
+//      }
+//      if(incomingByte== "R10"){
+//        Serial.println("LOW");
+//        digitalWrite(10,LOW);
+//        fill_solid(leds, NUM_LEDS, CRGB::White);
+//        FastLED.show();
+//      }
+//      Serial.print("I received: ");
+//      Serial.println(incomingByte);
+//   }
+
+//  uint16_t timerA = 500;  // How often to run Event A [milliseconds]
+//  uint16_t timerB = 500;  // How long after A to run Event B [milliseconds]
+//
+//
+//  // Setting the amount of time for "triggerTimer".
+//  // You can name "triggerTimer" whatever you want.
+//  static CEveryNMilliseconds triggerTimer(timerB);
+//  
+//  EVERY_N_MILLISECONDS(timerA){
+//    // do Event A stuff
+//    fill_solid(leds, NUM_LEDS, CHSV(random8(),255,128));
+//    counterTriggered = 1;  // Set to True
+//    triggerTimer.reset();  // Start trigger timer
+//  }
+//  
+//  if (counterTriggered == 1) {  // Will only be True if Event A has started
+//    if (triggerTimer) {  // Check if triggerTimer time reached
+//      // do Event B stuff
+//      for (uint8_t i=0; i<NUM_LEDS/2; i++){
+//        leds[random8(NUM_LEDS)] = CRGB::Red;
+//      }
+//      counterTriggered = 0;  // Set back to False
+//    }
+//  }
+//
+//
+//  EVERY_N_SECONDS_I( timingObj, 20) {
+//    // This initally defaults to 20 seconds, but then will change the run
+//    // period to a new random number of seconds from 10 and 30 seconds.
+//    // You can name "timingObj" whatever you want.
+//    timingObj.setPeriod( random8(10,31) );
+//    FastLED.clear();
+//    for (uint16_t i=0; i<NUM_LEDS*3; i++){
+//      leds[random8(NUM_LEDS)] = CRGB::Black;
+//      leds[random8(NUM_LEDS)] = CHSV(random8(), random8(140,255), random8(50,255));
+//      FastLED.show();
+//      delay(random8(20,80));
+//    }
+//    delay(500);
+//  }
+
+    
 }
 
 // void test(){
@@ -221,7 +342,7 @@ void flightmode(){
 
 //   extern String FlightState;
 //   Serial.println("Testing Flight Modes");
-  
+
 //   FlightState="H";
 //   Serial.print("test ");
 //   Serial.println(FlightState);
@@ -258,63 +379,3 @@ void flightmode(){
 //   delay(1000);
 
 // }
-
-
-
-void loop() {
-// printto("looping");/
- readSerial();
- flightmode();
-//  batterydisplay(batterylevelint); //Send the number of LEDs(1-10) to light up
-  
-  // FastLED.show();
-//  delay(500); // To prevent microcontroller from restarting due to fastled.show
- 
-  // test();
-
-  
-
-
-//   if (Serial.available() > 0) {
-//    // read the oldest byte in the serial buffer:
-//    incomingByte = Serial.readStringUntil('\n');
-////    previousByte = incomingByte;
-//    // if it's a capital H (ASCII 72), turn on the LED:
-//      if(incomingByte== "S5"){
-//        Serial.println("HIGH");
-//        digitalWrite(10,HIGH);
-//        fill_solid(leds, NUM_LEDS, CRGB::Red);
-//        FastLED.show();
-//      }
-//      if(incomingByte== "R10"){
-//        Serial.println("LOW");
-//        digitalWrite(10,LOW);
-//        fill_solid(leds, NUM_LEDS, CRGB::White);
-//        FastLED.show();
-//      }
-//      Serial.print("I received: ");
-//      Serial.println(incomingByte);
-//   }
-
-    
-    
-}
-
-
-
-//  digitalWrite(0, LOW);
-//  digitalWrite(1, HIGH);
-//  delay(rand()%200+10);
-//  digitalWrite(1, LOW);
-//  digitalWrite(0, HIGH);
-//  delay(rand()%200+10);
-
-//delay(rand()%20);
-//  digitalWrite(0, LOW);
-//  delay(rand()%20);
-//  digitalWrite(1, HIGH);
-//  delay(rand()%200+10);
-//  digitalWrite(1, LOW);
-//  delay(rand()%20);
-//  digitalWrite(0, HIGH);
-//  delay(rand()%200+10);
